@@ -3,9 +3,9 @@ from typing import List,Dict
 import math_utils as mut
 
 class structure:
-    def __init__ (self, nodes, elements):
+    def __init__ (self, nodes, connections):
         self.nodes = np.array (nodes)
-        self.elements = np.array (elements)
+        self.connections = np.array (connections)
 
 class boundaryconditions:
     def __init__ (self):
@@ -24,18 +24,18 @@ class boundaryconditions:
     def add_pinned_support (self, node_id):
         self.supports[node.id] = (0,0,0, None, None, None)
 
-class material:
+class materials:
     def __init__(self):
-        self.materials = ()
+        self.mat = ()
         self.domain = ()
 
-    def add_material(self, domain_id, E, nu, A, Iz, Iy, Ip, J, z):
-        self.materials[domain_id] = {'E': E,'nu':nu, 'A': A, 'Iz': Iz, 'Iy': Iy, 'Ip': Ip, 'J': J, 'z': z }
+    def add_material(self, domain_id, E, v, A, Iz, Iy, Ip, J, z):
+        self.mat[domain_id] = {'E': E,'v':v, 'A': A, 'Iz': Iz, 'Iy': Iy, 'Ip': Ip, 'J': J, 'z': z }
 
-    def assign_domain (self, domain_id, element_ids):
-        if domain_id not in self.materials:
+    def assign_domain (self, domain_id, connection_ids):
+        if domain_id not in self.mat:
             raise ValueError (f"Domain {domain_id} does not exist")
-        self.domains[domain_id] = element_ids
+        self.domains[domain_id] = connection_ids
 
 def assemble_global_stiffness_matrix(mesh, material_params):
     """
@@ -45,16 +45,16 @@ def assemble_global_stiffness_matrix(mesh, material_params):
     n_dofs = n_nodes * 6  # 6 DOFs per node
     K_global = np.zeros((n_dofs, n_dofs))
 
-    for element_id, (node1, node2) in enumerate(mesh.elements):
+    for element_id, (node1, node2) in enumerate(mesh.connections):
         # Get material properties
         domain_id = next((k for k, v in material.domains.items() if element_id in v), None)
         if domain_id is None:
             raise ValueError(f"Element {element_id} is not assigned to any domain.")
-        props = material_params.materials[domain_id]
+        props = material_params.mat[domain_id]
 
         # Compute local stiffness matrix
         L = np.linalg.norm(mesh.nodes[node2] - mesh.nodes[node1])
-        k_local = mut.local_elastic_stiffness_matrix_3D_beam(props['E'],props['nu'],props['A'],L,props['Iy'],props['Iz'],props['J'])
+        k_local = mut.local_elastic_stiffness_matrix_3D_beam(props['E'],props['v'],props['A'],L,props['Iy'],props['Iz'],props['J'])
 
         # Compute transformation matrix
         node1_loc=mesh.nodes[node1]
@@ -160,7 +160,7 @@ def solve_system(K_global, boundary_conditions):
     return displacements, reactions
 
 
-def generate_mesh_and_solve(nodes:np.ndarray, elements:np.ndarray, materialproperty:Dict, domain_elements:Dict, list_fixed_nodes_id:List, list_pinned_nodes_id:List, load_dict:Dict,) ->np.ndarray:
+def generate_mesh_and_solve(nodes:np.ndarray, connections:np.ndarray, materialproperty:Dict, domain_elements:Dict, list_fixed_nodes_id:List, list_pinned_nodes_id:List, load_dict:Dict,) ->np.ndarray:
     """
     Given nodes, element connectivities, material properties, subdomains, boundary conditions, and external forces,
     generate mesh and solve for the system.
@@ -184,15 +184,15 @@ def generate_mesh_and_solve(nodes:np.ndarray, elements:np.ndarray, materialprope
     rxns: n by 6 array containing the global rxn forces
     """
 
-    mesh = structure(nodes,elements)
-    materials=material()
+    mesh = structure(nodes,connections)
+    mat=materials()
     for item in materialproperty.items():
         node_id,mat_params=item
-        materials.add_material (domain_id=node_id,E=mat_params[0], nu=mat_params[1], A=mat_params[2], Iz=mat_params[3], Iy=mat_params[4], Ip=mat_params[5], J=mat_params[6], z=mat_params[7])
+        mat.add_material (domain_id=node_id,E=mat_params[0], v=mat_params[1], A=mat_params[2], Iz=mat_params[3], Iy=mat_params[4], Ip=mat_params[5], J=mat_params[6], z=mat_params[7])
 
     for item in domain_elements.items():
         sub_id,elements_in_sub = item
-        materials.assign_domain(sub_id,elements_in_sub)
+        mat.assign_domain(sub_id,elements_in_sub)
 
     bcs=boundaryconditions()
     for fixed_id in list_fixed_nodes_id:
@@ -205,7 +205,7 @@ def generate_mesh_and_solve(nodes:np.ndarray, elements:np.ndarray, materialprope
         node_id,load = item
         bcs.add_load(node_id, Fx=load[0], Fy=load[1], Fz=load[2], Mx=load[3], My=load[4], Mz=load[5])
 
-    K_global=assemble_global_stiffness_matrix(mesh,materials)
+    K_global=assemble_global_stiffness_matrix(mesh,mat)
 
     disps,rxns=solve_system(K_global,bcs)
 
