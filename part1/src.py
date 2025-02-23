@@ -1,5 +1,6 @@
 import numpy as np
 from typing import List,Dict
+import math_utils as mut
 
 class structure:
     def __init__ (self, nodes, elements):
@@ -27,9 +28,9 @@ class material:
     def __init__(self):
         self.materials = ()
         self.domain = ()
-    
-    def add_material (self, domain_id, E, nu, A, Iz, Iy, Ip, J, z):
-        self.materials[domain_id] = { 'E': E, 'nu': nu, 'A': A, 'Iz': Iz, 'Iy': Iy, 'Ip': Ip, 'J': J, 'z': z}
+
+    def add_material(self, domain_id, E, nu, A, Iz, Iy, Ip, J, z):
+        self.materials[domain_id] = {'E': E,'nu':nu, 'A': A, 'Iz': Iz, 'Iy': Iy, 'Ip': Ip, 'J': J, 'z': z }
 
     def assign_domain (self, domain_id, element_ids):
         if domain_id not in self.materials:
@@ -159,15 +160,7 @@ def solve_system(K_global, boundary_conditions):
     return displacements, reactions
 
 
-def generate_mesh_and_solve(
-    nodes:np.ndarray,
-    elements:np.ndarray,
-    domain_dict:Dict,
-    domain_elements:Dict,
-    list_fixed_nodes_id:List,
-    list_pinned_nodes_id:List,
-    load_dict:Dict,
-)->np.ndarray:
+def generate_mesh_and_solve(nodes:np.ndarray, elements:np.ndarray, materialproperty:Dict, domain_elements:Dict, list_fixed_nodes_id:List, list_pinned_nodes_id:List, load_dict:Dict,) ->np.ndarray:
     """
     Given nodes, element connectivities, material properties, subdomains, boundary conditions, and external forces,
     generate mesh and solve for the system.
@@ -193,20 +186,20 @@ def generate_mesh_and_solve(
 
     mesh = structure(nodes,elements)
     materials=material()
-    for item in domain_dict.items():
+    for item in materialproperty.items():
         node_id,mat_params=item
-        materials.add_material(domain_id=node_id, E=mat_params[0], nu=mat_params[1], A=mat_params[2], Iz=mat_params[3], Iy=mat_params[4], Ip=mat_params[5], J=mat_params[6], z=mat_params[7])
+        materials.add_material (domain_id=node_id,E=mat_params[0], nu=mat_params[1], A=mat_params[2], Iz=mat_params[3], Iy=mat_params[4], Ip=mat_params[5], J=mat_params[6], z=mat_params[7])
 
     for item in domain_elements.items():
         sub_id,elements_in_sub = item
-        materials.assign_domain(domain_id=sub_id,element_ids=elements_in_sub)
+        materials.assign_domain(sub_id,elements_in_sub)
 
-    bcs=BoundaryConditions()
+    bcs=boundaryconditions()
     for fixed_id in list_fixed_nodes_id:
         bcs.add_fixed_support(fixed_id)
 
     for pinned_id in list_pinned_nodes_id:
-        bcs.add_fixed_support(pinned_id)
+        bcs.add_pinned_support(pinned_id)
 
     for item in load_dict.items():
         node_id,load = item
