@@ -1,16 +1,11 @@
 #Import Info from other scripts
 import numpy as np
 import random
-from Newtons_Method.src.function import *
+from Newtons import *
 import os
 from pathlib import Path
 from sympy import symbols, diff, lambdify
 x = symbols('x')
-
-#Define Example function
-f = [2*x, 2*x+3]
-list1 = range (-50,50)
-tol = 0.001
 
 n = 2
 #Used to evaluate method 4 times, outputs second root if found
@@ -44,7 +39,6 @@ def multi_root(f):
             return roots
 
 def multi_function (eqns, x0, n):
-
     for i in range (n):
         f = eqns[i]
         root = newtons_method (f, x0)

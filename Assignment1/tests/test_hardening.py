@@ -1,5 +1,5 @@
-from Material_model.src.ihardening import *
-from Material_model.src.khardening import *
+from ihardening import *
+from khardening import *
 
 
 def test_sign ():
@@ -47,3 +47,33 @@ def test_ipredictor ():
     Y0, sig_n, eps_n = ipredictor (Y0, E, del_eps, sig_n, H, eps_n)
     x = Y0 +sig_n+eps_n
     assert x == 0
+
+def test_sum ():
+    a = 2
+    b = 3
+    assert a+b ==5
+
+def test_multi ():
+    a = 2
+    b = 3
+    assert a*b == 6
+
+def test_div ():
+    a = 2
+    b = 1
+    assert a/b == 2
+
+def test_sub ():
+    a = 2
+    b = 1
+    assert a-b == 1
+
+def test_negative ():
+    a = -1
+    b = 1
+    assert a*b < 0
+
+def test_ratio ():
+    a = 2
+    assert a < 3
+

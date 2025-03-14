@@ -1,0 +1,15 @@
+LICENSE
+pyproject.toml
+src/MultiRoot.py
+src/Newtons.py
+src/bisection.py
+src/ihardening.py
+src/khardening.py
+src/Me700_hw1.egg-info/PKG-INFO
+src/Me700_hw1.egg-info/SOURCES.txt
+src/Me700_hw1.egg-info/dependency_links.txt
+src/Me700_hw1.egg-info/requires.txt
+src/Me700_hw1.egg-info/top_level.txt
+tests/test_bisection.py
+tests/test_hardening.py
+tests/test_newtons.py
