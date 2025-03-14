@@ -1,7 +1,7 @@
 #Import Info from other scripts
 import numpy as np
 import random
-from function import *
+from Newtons_Method.src.function import *
 import os
 from pathlib import Path
 from sympy import symbols, diff, lambdify

@@ -1,5 +1,5 @@
-from ihardening import *
-from khardening import *
+from Material_model.src.ihardening import *
+from Material_model.src.khardening import *
 
 
 def test_sign ():

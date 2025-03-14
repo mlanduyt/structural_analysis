@@ -1,6 +1,6 @@
 import numpy as np
-from function import *
-from MultiRoot import *
+from Newtons_Method.src.function import *
+from Newtons_Method.src.MultiRoot import *
 import os
 from pathlib import Path
 

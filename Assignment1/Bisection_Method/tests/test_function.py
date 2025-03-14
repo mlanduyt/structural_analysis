@@ -1,5 +1,5 @@
 import numpy as np
-from function import *
+from Bisection_Method.src.function import *
 import os
 from pathlib import Path
 
