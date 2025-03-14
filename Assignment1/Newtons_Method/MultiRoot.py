@@ -43,17 +43,9 @@ def multi_root(f):
             roots = [root1, root2]
             return roots
 
-def multi_function (eqns): 
-    for i in range (0,2):
-        f = eqns[i]
-        root == multi_root(eqns)
-        print (root)
-        return root
-        
+def multi_function (eqns, x0, n):
 
-x0 = 3
-x = sym.symbols('x')
-eqns = ((x*2)-1, x)
-n = 2
-roots = multi_function(eqns)
-print (roots)
+    for i in range (n):
+        f = eqns[i]
+        root = newtons_method (f, x0)
+        print ('root=', root)

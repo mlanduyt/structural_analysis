@@ -1,6 +1,5 @@
 ### Summary
 
-This code may be cloned via git clone https://github.com/mlanduyt/Newtons_Method/
 
 The main function of this code is executed by the running the 'tutorial' file. Example 5 allows for user input. 
 
@@ -9,8 +8,6 @@ This program is designed to execute material modeling using either the isotropic
 Initial values used for calculation are all contained within the tutorial file, these may be changed as the user sees fit. 
 
 These methods may be used as a valuable tool, but there are drawbacks in their assumptions which should be understood before using their results as truth. 
-
-### Getting Started
 
 All modules required should be self-contained and installed as part of the script.
 
