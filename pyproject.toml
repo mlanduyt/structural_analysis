@@ -4,12 +4,12 @@ build-backend = "setuptools.build_meta"
 
 
 [project]
-name = "Me700_hw1"
+name = "Assignment1"
 version = "0.0.0"
 authors = [
   { name="Michael Landuyt", email="mlanduyt@bu.edu" },
 ]
-description = "ME700 Assignment 2"
+description = "Assignment 1"
 readme = "README.md"
 license = { file="LICENSE" }
 requires-python = ">=3.9"
